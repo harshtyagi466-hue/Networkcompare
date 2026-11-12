@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetworkCompare - Internet Speed Test</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #0b1120;
+  color: white;
+  text-align: center;
+}
+
+header {
+  padding: 25px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #00e5ff;
+}
+
+.container {
+  max-width: 650px;
+  margin: auto;
+  padding: 20px;
+}
+
+.card {
+  background: #151f33;
+  border-radius: 20px;
+  padding: 25px;
+  margin: 20px 0;
+}
+
+.meter {
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  border: 12px solid #00e5ff;
+  margin: 20px auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 0 25px #00e5ff44;
+}
+
+#speed {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+#unit {
+  color: #00e5ff;
+  font-size: 18px;
+}
+
+button {
+  background: #00e5ff;
+  color: #08111f;
+  border: none;
+  padding: 16px 35px;
+  border-radius: 40px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.stat {
+  background: #202d44;
+  padding: 15px 5px;
+  border-radius: 12px;
+}
+
+.stat h3 {
+  color: #00e5ff;
+}
+
+#status {
+  color: #aabbd5;
+  margin: 15px;
+}
+
+footer {
+  color: #8899aa;
+  padding: 20px;
+  font-size: 13px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🌐 NetworkCompare</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Internet Speed Test</h2>
+
+<div class="meter">
+  <span id="speed">0.00</span>
+  <span id="unit">Mbps</span>
+</div>
+
+<p id="status">Ready to test your internet</p>
+
+<button id="start" onclick="startTest()">
+START TEST
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Network Results</h2>
+
+<div class="stats">
+
+<div class="stat">
+<h3 id="ping">--</h3>
+<p>Ping (ms)</p>
+</div>
+
+<div class="stat">
+<h3 id="download">--</h3>
+<p>Download</p>
+</div>
+
+<div class="stat">
+<h3 id="upload">--</h3>
+<p>Upload</p>
+</div>
+
+</div>
+</div>
+
+<footer>
+NetworkCompare | Internet Speed Testing
+</footer>
+
+<script>
+
+const speedEl = document.getElementById("speed");
+const statusEl = document.getElementById("status");
+const button = document.getElementById("start");
+
+async function measurePing() {
+  let times = [];
+
+  for (let i = 0; i < 5; i++) {
+    let start = performance.now();
+
+    await fetch(
+      "https://speed.cloudflare.com/__down?bytes=0&t=" + Date.now() + i,
+      { cache: "no-store" }
+    );
+
+    times.push(performance.now() - start);
+  }
+
+  return Math.round(
+    times.reduce((a, b) => a + b, 0) / times.length
+  );
+}
+
+async function measureDownload() {
+  const size = 25000000;
+  const url = "https://speed.cloudflare.com/__down?bytes="
+    + size + "&t=" + Date.now();
+
+  const start = performance.now();
+
+  const response = await fetch(url, {
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Download test failed");
+  }
+
+  const data = await response.arrayBuffer();
+
+  const seconds = (performance.now() - start) / 1000;
+
+  return (data.byteLength * 8) / seconds / 1000000;
+}
+
+async function measureUpload() {
+  const size = 10000000;
+  const data = new Blob([
+    new Uint8Array(size)
+  ]);
+
+  const start = performance.now();
+
+  const response = await fetch(
+    "https://speed.cloudflare.com/__up",
+    {
+      method: "POST",
+      body: data
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error("Upload test failed");
+  }
+
+  const seconds = (performance.now() - start) / 1000;
+
+  return (size * 8) / seconds / 1000000;
+}
+
+async function startTest() {
+
+  button.disabled = true;
+
+  speedEl.textContent = "0.00";
+
+  document.getElementById("ping").textContent = "--";
+  document.getElementById("download").textContent = "--";
+  document.getElementById("upload").textContent = "--";
+
+  try {
+
+    statusEl.textContent = "Testing Ping...";
+
+    const ping = await measurePing();
+
+    document.getElementById("ping").textContent = ping;
+
+    statusEl.textContent = "Testing Download Speed...";
+
+    const download = await measureDownload();
+
+    document.getElementById("download").textContent =
+      download.toFixed(2);
+
+    speedEl.textContent = download.toFixed(2);
+
+    statusEl.textContent = "Testing Upload Speed...";
+
+    const upload = await measureUpload();
+
+    document.getElementById("upload").textContent =
+      upload.toFixed(2);
+
+    statusEl.textContent = "Speed Test Completed!";
+
+  } catch (error) {
+
+    statusEl.textContent =
+      "Test failed. Please check your internet connection.";
+
+    console.error(error);
+
+  } finally {
+
+    button.disabled = false;
+
+  }
+}
+
+</script>
+
+</body>
+</html>
