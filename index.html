@@ -4,278 +4,511 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>NetworkCompare - Internet Speed Test</title>
 
 <style>
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0b1120;
-  color: white;
-  text-align: center;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0b1220;
+    color: white;
+    text-align: center;
 }
 
 header {
-  padding: 25px;
-  font-size: 28px;
-  font-weight: bold;
-  color: #00e5ff;
+    padding: 25px;
+    background: #121d31;
+}
+
+header h1 {
+    color: #00e5a0;
+    font-size: 30px;
+}
+
+header p {
+    color: #b0bec5;
 }
 
 .container {
-  max-width: 650px;
-  margin: auto;
-  padding: 20px;
+    max-width: 750px;
+    margin: auto;
+    padding: 20px;
 }
 
 .card {
-  background: #151f33;
-  border-radius: 20px;
-  padding: 25px;
-  margin: 20px 0;
+    background: #172338;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
 }
 
-.meter {
-  width: 230px;
-  height: 230px;
-  border-radius: 50%;
-  border: 12px solid #00e5ff;
-  margin: 20px auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  box-shadow: 0 0 25px #00e5ff44;
+select, input {
+    padding: 12px;
+    width: 100%;
+    border-radius: 8px;
+    border: none;
+    margin: 10px 0;
+    background: #263750;
+    color: white;
+    font-size: 16px;
 }
 
-#speed {
-  font-size: 48px;
-  font-weight: bold;
+/* Speedometer */
+
+.speedometer {
+    width: 260px;
+    height: 260px;
+    margin: 20px auto;
+    position: relative;
+    border-radius: 50%;
+    background: conic-gradient(
+        from 225deg,
+        #00e5a0 0deg,
+        #00bfff 90deg,
+        #ffcc00 180deg,
+        #ff4444 240deg,
+        transparent 270deg
+    );
+    padding: 12px;
 }
 
-#unit {
-  color: #00e5ff;
-  font-size: 18px;
+.inner {
+    background: #0b1220;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+}
+
+.needle {
+    position: absolute;
+    width: 5px;
+    height: 90px;
+    background: white;
+    left: 50%;
+    bottom: 50%;
+    transform-origin: bottom center;
+    transform: rotate(-135deg);
+    transition: transform 0.7s;
+    border-radius: 5px;
+}
+
+.speed-number {
+    position: absolute;
+    width: 100%;
+    top: 58%;
+    transform: translateY(-50%);
+}
+
+.speed-number h2 {
+    font-size: 38px;
+    color: #00e5a0;
+    margin: 0;
+}
+
+.speed-number p {
+    color: #aaa;
+    margin: 5px;
 }
 
 button {
-  background: #00e5ff;
-  color: #08111f;
-  border: none;
-  padding: 16px 35px;
-  border-radius: 40px;
-  font-size: 18px;
-  font-weight: bold;
-  cursor: pointer;
+    background: #00e5a0;
+    color: #071b14;
+    border: none;
+    padding: 15px 25px;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #00c98c;
 }
 
 button:disabled {
-  opacity: 0.5;
+    opacity: 0.5;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+.results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 20px;
 }
 
-.stat {
-  background: #202d44;
-  padding: 15px 5px;
-  border-radius: 12px;
+.result-box {
+    background: #0b1220;
+    padding: 15px;
+    border-radius: 10px;
 }
 
-.stat h3 {
-  color: #00e5ff;
+.result-box h3 {
+    color: #00e5a0;
+    font-size: 22px;
 }
 
-#status {
-  color: #aabbd5;
-  margin: 15px;
+.result-box p {
+    font-size: 13px;
+    color: #aaa;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px 5px;
+    border-bottom: 1px solid #34445c;
+}
+
+th {
+    color: #00e5a0;
 }
 
 footer {
-  color: #8899aa;
-  padding: 20px;
-  font-size: 13px;
+    padding: 20px;
+    color: #aaa;
+    font-size: 13px;
+}
+
+@media(max-width: 500px) {
+    .speedometer {
+        width: 220px;
+        height: 220px;
+    }
+
+    .needle {
+        height: 75px;
+    }
+
+    .results {
+        gap: 5px;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<header>🌐 NetworkCompare</header>
+<header>
+    <h1>📶 NetworkCompare</h1>
+    <p>Check Internet Speed at Your Home</p>
+</header>
 
 <div class="container">
 
 <div class="card">
 
-<h2>Internet Speed Test</h2>
+<h2>🚀 Internet Speed Test</h2>
 
-<div class="meter">
-  <span id="speed">0.00</span>
-  <span id="unit">Mbps</span>
+<select id="operator">
+    <option value="Jio">Jio</option>
+    <option value="Airtel">Airtel</option>
+    <option value="Vi">Vi</option>
+    <option value="BSNL">BSNL</option>
+</select>
+
+<div class="speedometer">
+
+    <div class="inner">
+
+        <div class="needle" id="needle"></div>
+
+        <div class="speed-number">
+            <h2 id="speed">0.00</h2>
+            <p>Mbps</p>
+        </div>
+
+    </div>
+
 </div>
 
-<p id="status">Ready to test your internet</p>
-
-<button id="start" onclick="startTest()">
-START TEST
+<button id="startBtn" onclick="startTest()">
+    START SPEED TEST
 </button>
+
+<div class="results">
+
+    <div class="result-box">
+        <h3 id="download">0</h3>
+        <p>Download Mbps</p>
+    </div>
+
+    <div class="result-box">
+        <h3 id="upload">0</h3>
+        <p>Upload Mbps</p>
+    </div>
+
+    <div class="result-box">
+        <h3 id="ping">0</h3>
+        <p>Ping ms</p>
+    </div>
+
+</div>
+
+<p id="status">Ready to test</p>
 
 </div>
 
 <div class="card">
 
-<h2>Network Results</h2>
+<h2>📍 Network Comparison</h2>
 
-<div class="stats">
+<input id="pincode"
+       type="text"
+       maxlength="6"
+       placeholder="Enter your PIN Code">
 
-<div class="stat">
-<h3 id="ping">--</h3>
-<p>Ping (ms)</p>
+<button onclick="saveLocation()">
+    SAVE LOCATION
+</button>
+
+<p id="locationStatus"></p>
+
+<table>
+
+<thead>
+<tr>
+    <th>SIM</th>
+    <th>Download</th>
+    <th>Upload</th>
+    <th>Ping</th>
+</tr>
+</thead>
+
+<tbody id="comparison">
+
+<tr>
+    <td>Jio</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr>
+
+<tr>
+    <td>Airtel</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr>
+
+<tr>
+    <td>Vi</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr>
+
+<tr>
+    <td>BSNL</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+</tr>
+
+</tbody>
+
+</table>
+
+<p style="color:#aaa;font-size:13px">
+Comparison will show tested data only.
+Other SIM networks cannot be live-tested without connecting to them.
+</p>
+
 </div>
 
-<div class="stat">
-<h3 id="download">--</h3>
-<p>Download</p>
-</div>
-
-<div class="stat">
-<h3 id="upload">--</h3>
-<p>Upload</p>
-</div>
-
-</div>
 </div>
 
 <footer>
-NetworkCompare | Internet Speed Testing
+    NetworkCompare © 2026
+    <br>
+    Internet Speed Test
 </footer>
 
 <script>
 
-const speedEl = document.getElementById("speed");
-const statusEl = document.getElementById("status");
-const button = document.getElementById("start");
+let networkResults = {
+    Jio: null,
+    Airtel: null,
+    Vi: null,
+    BSNL: null
+};
 
-async function measurePing() {
-  let times = [];
+function updateMeter(value) {
 
-  for (let i = 0; i < 5; i++) {
+    document.getElementById("speed").innerText =
+        value.toFixed(2);
+
+    let angle = Math.min(value, 100) / 100 * 270 - 135;
+
+    document.getElementById("needle").style.transform =
+        "rotate(" + angle + "deg)";
+}
+
+async function pingTest() {
+
     let start = performance.now();
 
     await fetch(
-      "https://speed.cloudflare.com/__down?bytes=0&t=" + Date.now() + i,
-      { cache: "no-store" }
+        "https://speed.cloudflare.com/__down?bytes=0",
+        { cache: "no-store" }
     );
 
-    times.push(performance.now() - start);
-  }
-
-  return Math.round(
-    times.reduce((a, b) => a + b, 0) / times.length
-  );
+    return performance.now() - start;
 }
 
-async function measureDownload() {
-  const size = 25000000;
-  const url = "https://speed.cloudflare.com/__down?bytes="
-    + size + "&t=" + Date.now();
+async function downloadTest() {
 
-  const start = performance.now();
+    let start = performance.now();
 
-  const response = await fetch(url, {
-    cache: "no-store"
-  });
+    let response = await fetch(
+        "https://speed.cloudflare.com/__down?bytes=1000000",
+        { cache: "no-store" }
+    );
 
-  if (!response.ok) {
-    throw new Error("Download test failed");
-  }
-
-  const data = await response.arrayBuffer();
-
-  const seconds = (performance.now() - start) / 1000;
-
-  return (data.byteLength * 8) / seconds / 1000000;
-}
-
-async function measureUpload() {
-  const size = 10000000;
-  const data = new Blob([
-    new Uint8Array(size)
-  ]);
-
-  const start = performance.now();
-
-  const response = await fetch(
-    "https://speed.cloudflare.com/__up",
-    {
-      method: "POST",
-      body: data
+    if (!response.ok) {
+        throw new Error("Download test failed");
     }
-  );
 
-  if (!response.ok) {
-    throw new Error("Upload test failed");
-  }
+    let data = await response.arrayBuffer();
 
-  const seconds = (performance.now() - start) / 1000;
+    let seconds =
+        (performance.now() - start) / 1000;
 
-  return (size * 8) / seconds / 1000000;
+    return (data.byteLength * 8) / seconds / 1000000;
+}
+
+async function uploadTest() {
+
+    let data = new Uint8Array(500000);
+
+    let start = performance.now();
+
+    let response = await fetch(
+        "https://speed.cloudflare.com/__up",
+        {
+            method: "POST",
+            body: data
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Upload test failed");
+    }
+
+    let seconds =
+        (performance.now() - start) / 1000;
+
+    return (data.length * 8) / seconds / 1000000;
 }
 
 async function startTest() {
 
-  button.disabled = true;
+    let button = document.getElementById("startBtn");
 
-  speedEl.textContent = "0.00";
+    button.disabled = true;
 
-  document.getElementById("ping").textContent = "--";
-  document.getElementById("download").textContent = "--";
-  document.getElementById("upload").textContent = "--";
+    document.getElementById("status").innerText =
+        "Testing your network...";
 
-  try {
+    try {
 
-    statusEl.textContent = "Testing Ping...";
+        let ping = await pingTest();
 
-    const ping = await measurePing();
+        document.getElementById("ping").innerText =
+            Math.round(ping);
 
-    document.getElementById("ping").textContent = ping;
+        document.getElementById("status").innerText =
+            "Testing Download Speed...";
 
-    statusEl.textContent = "Testing Download Speed...";
+        let download = await downloadTest();
 
-    const download = await measureDownload();
+        document.getElementById("download").innerText =
+            download.toFixed(2);
 
-    document.getElementById("download").textContent =
-      download.toFixed(2);
+        updateMeter(download);
 
-    speedEl.textContent = download.toFixed(2);
+        document.getElementById("status").innerText =
+            "Testing Upload Speed...";
 
-    statusEl.textContent = "Testing Upload Speed...";
+        let upload = await uploadTest();
 
-    const upload = await measureUpload();
+        document.getElementById("upload").innerText =
+            upload.toFixed(2);
 
-    document.getElementById("upload").textContent =
-      upload.toFixed(2);
+        let operator =
+            document.getElementById("operator").value;
 
-    statusEl.textContent = "Speed Test Completed!";
+        networkResults[operator] = {
+            download: download.toFixed(2),
+            upload: upload.toFixed(2),
+            ping: Math.round(ping)
+        };
 
-  } catch (error) {
+        updateComparison();
 
-    statusEl.textContent =
-      "Test failed. Please check your internet connection.";
+        document.getElementById("status").innerText =
+            "Test completed successfully!";
 
-    console.error(error);
+    } catch (error) {
 
-  } finally {
+        document.getElementById("status").innerText =
+            "Test failed. Please check your internet connection and try again.";
+
+    }
 
     button.disabled = false;
+}
 
-  }
+function updateComparison() {
+
+    let tbody =
+        document.getElementById("comparison");
+
+    tbody.innerHTML = "";
+
+    for (let operator in networkResults) {
+
+        let result = networkResults[operator];
+
+        let row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${operator}</td>
+            <td>${result ? result.download : "-"}</td>
+            <td>${result ? result.upload : "-"}</td>
+            <td>${result ? result.ping : "-"}</td>
+        `;
+
+        tbody.appendChild(row);
+    }
+}
+
+function saveLocation() {
+
+    let pin =
+        document.getElementById("pincode").value;
+
+    if (!/^\d{6}$/.test(pin)) {
+
+        document.getElementById("locationStatus").innerText =
+            "Please enter a valid 6-digit PIN Code.";
+
+        return;
+    }
+
+    document.getElementById("locationStatus").innerText =
+        "PIN Code entered: " + pin +
+        ". Area-wise comparison requires shared test data.";
 }
 
 </script>
